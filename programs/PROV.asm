@@ -20,9 +20,9 @@ bne r5 0 :load_data  ;check if n of wagons is adequate
 sst r1 [virtual-signal=signal-green]  ;if we arrived here we can fulfill so we set signal to green
 mov out1 r1  ;we reply (the absence of reply is a negative reply)
 mov out1 0
-slp 4        ;wait for the train number calculation performed in the depot
+slp 5        ;wait for the train number calculation performed in the depot
+fir r7 [virtual-signal=signal-grey]  ;recieve the requester where we have to send the trains to
 fir r6 [virtual-signal=signal-Z]     ;recieve number of trains that will perform the service
-fir r7 [virtual-signal=signal-grey]  ;recieve the requester where we have to send thjee trains to
 sst r7 [virtual-signal=signal-R]     ;set the revieced signal to R (preparing it for the smart-train-stop)
 mov out1 1[virtual-signal=signal-white] ; as in the requester this signal will trigger a RUN in another fCPU that will handle the order
 mov out1 r6 ;send to the handler the n of trains

@@ -4,7 +4,6 @@ clr
 mov r1 1[virtual-signal=signal-grey] ;grey is main polling signal
 :polling  ;ask all the requesters if they need anything
 mov out1 r1
-nop
 mov out1 0
 slp 2
 fir r3 [virtual-signal=signal-station-number] ;check for reply form requester
@@ -19,7 +18,7 @@ mov r2 red1                       ;read actual goods requested
 mov r8 1[virtual-signal=signal-yellow] ;set the starting polling signal for providers (yellow)
 :loop_prov   ;send to the provider polling signal + basic data for checks
 mov out1 r8  ;send polling signal
-slp 2
+mov out1 0
 mov out1 r2  ;send goods
 mov out1 r4  ;send requested locos
 mov out1 r5  ;send requested wagons
@@ -37,13 +36,10 @@ jmp :loop_prov          ;continue looping
 div r2 r6               ;calulate number of trains
 inc r2                  ;round up so we dont get train filling problems
 sst r2 [virtual-signal=signal-Z] ;we set n of trains to be sent to Z signal
-mov out1 r2             ;send Z to provider
-mov out1 r1             ;send quantity to send to provider
+:reply_requester        ;confirm order to the requester        
+mov out1 r1             ;send requester number (to activate req but will be recorded by the PROV as well)
+mov out1 r2             ;send Z (will be recorded by PROV as well)
 mov out1 0
-:reply_requester        ;confirm order to the requester
-mov out1 r1             ;req ID
-slp 3
-mov out1 r2             ;send Z to requester
 mov out1 r7             ;send provider number to requester (for bookeeping and debugging) 
 mov out1 0
 bas r2 [virtual-signal=signal-red] :polling ;if we didnt find a suitable provider we continue polling following requesters
