@@ -1,7 +1,9 @@
 # CTS-Cidorz-Train-System
 Programs running inside the fCPUs of a train scheduling system for the game Factorio as well as blueprints showcasing the functionality.
-DISCLAIMER: It is not a plug and play system, you need to make a basic setup for it to work.
-DISCLAIMER2: In these programs and the mock-up some values have been selected/altered to make it easy to show how the system works. The main "cheat" is the stack size used for wood that is 5, this allows us to fill a train with theoretically 5x40x4 = 800 wood. In case you want to transport real full trains of wood you need to change that value. You need to also add any goods you want to transport that are not in the dictionary. The dictionary is the 2 constant combinators that are near the server.
+
+DISCLAIMER: It is not a plug and play system, you need to make a basic setup for it to work. The system should be well suited for medium load average size factories. It is not super optimized by default, nor to load the trains fully, nor to any extent. Its main goal is ease of use and easy to hack while being usable and fun. If you make some different design choices (changing the programs here and there) you can modify the system to your needs.
+
+DISCLAIMER2: In these programs and the mock-up some values have been selected/altered to make it easy to show how the system works. The main "cheat" is the stack size used for wood that is 5, this allows us to fill a train with theoretically 5x40x4 = 800 wood. In case you want to transport real full trains of wood you need to change that value. You need to also add any goods you want to transport that are not in the dictionary. The dictionary is the 2 constant combinators that are near the server. Recently a new instruction has been provided in fCPU to retrieve the stack size of an item. It is offered as a substitute for the manually built dictionary in line (near line 26 in main server program) and can be found as `uiss r6 r2`.
 
 - [Introduction](#introduction)
 - [Initial setup and general indications](#initial-setup-and-general-indications)
@@ -19,7 +21,7 @@ The goal is to schedule trains to transport materials from supplying stations (P
 For the system to work you need to have installed [fCPU](https://mods.factorio.com/mod/fcpu) to be able to execute the asm programs of this repo and [smarter trains](https://mods.factorio.com/mod/SmartTrains) to be able to dynamically alter the train schedules and thus direct them properly.
 All the stations (Depot, requester and provider) are on the same "line" so smarter trains will give each a unique ID that we will use. This is why you need to create the line before starting the fCPU's. The station number must be assigned before starting to run the program so the station must be added to the line before starting it. For convention the depot will be the first station of your line.
 
-All the stations are connected with red wire, red wire is common to all main fCPU's as both input and output. All the main fCPUs have also green wire input with data private to that station (like ID, material, wagons accepted, etc.)
+All the stations are connected with red wire, red wire is common to all main fCPU's as both input and output. All the main fCPUs have also green wire input with data private to that station (like ID, material, wagons accepted, etc.). It has green output to communicate with the auxiliary fCPU as well.
 
 To commission a station the procedure is similar in all of them but with some differences:
 
@@ -68,7 +70,7 @@ The goods being exchanged (in this case wood) appear in many places since it is 
 Both of the aux fcpu's on providers and requesters are pretty straight forward, they basically copy Z and the quantity to load on each train for the provider and count trains. For the depot tough is a bit more complicated since correct train composition must be selected. I usually lay 10 depot stations and a big stacker or group of stackers before them. Then orders are loaded, trains are dispatched and new trains come to fill the depot very fast. As I said I have not tested with different train compositions but you'd need to filter the trains in order to have every composition always available to dispatch.
 Lets have a look in the case of the example order how the aux depot is loaded:
 
-![depot_aux](/images/depot_aux_loaded.jpg)
+   ![depot_aux](/images/depot_aux_loaded.jpg)
 
 Z,L and W have the meaning already explained. P is the provider the trains need to be sent to. i (signal info) is a signal I use to iterate over all the stations present in the depot. This way I am sure I dispatch 1 train at a time.
 
@@ -78,7 +80,7 @@ First of all let's see the configuration of the train line in smarter trains:
 
 ![line config](/images/stconfig.jpg)
 
-As you can see all the stations are in the same line and depot is number one. Then the trains need to be added to the line and set to automatic. They will wait in the depot for the order.
+As you can see all the stations are in the same line and depot is number one. Then the trains need to be added to the line and set to automatic. They will wait in the depot for the order. The conditions on the line must be set to signal# as seen in the screenshot so the trains read their destination before leaving the stops. 
 
 There are some areas of interest in the mock-up that can be seen in the following image:
 

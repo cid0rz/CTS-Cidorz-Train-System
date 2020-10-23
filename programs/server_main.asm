@@ -24,6 +24,7 @@ mov out1 r4  ;send requested locos
 mov out1 r5  ;send requested wagons
 mov out1 0
 fig r6 r2    ;retrieve stack size for demanded item and start the calculations while provider checks
+;uiss r6 r2 ;use builtin function to retreive stack size
 mul r6 40    ;40 slots per wagon
 mul r6 r5    ;r5 wagons per train (so r6 stores how much will be sent per train)
 slp 3        ;provider is SLOW! damn! xD
