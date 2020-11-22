@@ -16,7 +16,7 @@ fir r1 [virtual-signal=signal-grey]
 bne r1 r3 :listen     ;if recieved signal is not your ID: loop
 :answer               ;if recieved is your ID answer
 mov out1 r3           ;send sequentially needed data
-nop
+slp 1
 mov out1 r4
 mov out1 r5
 mov out1 r2

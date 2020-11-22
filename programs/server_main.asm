@@ -27,7 +27,7 @@ fig r6 r2    ;retrieve stack size for demanded item and start the calculations w
 ;uiss r6 r2 ;use builtin function to retreive stack size
 mul r6 40    ;40 slots per wagon
 mul r6 r5    ;r5 wagons per train (so r6 stores how much will be sent per train)
-slp 3        ;provider is SLOW! damn! xD
+slp 2        ;provider is SLOW! damn! xD
 fir r7 [virtual-signal=signal-green]  ;check for green or ask next provider
 bne r7 0 :book          ;if we got a green we got a confirmation so we book
 beq r8 100 :not_found   ;if we got to provider 100 (you can adjust those limits) there is no suitabel provider
